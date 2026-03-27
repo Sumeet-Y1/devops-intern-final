@@ -1,0 +1,30 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  run-hello:
+    name: Run hello.py
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run hello.py
+        run: python hello.py
+
+      - name: Build Docker image
+        run: docker build -t hello-devops .
+
+      - name: Run Docker container
+        run: docker run --rm hello-devops

@@ -1,0 +1,123 @@
+========================================
+  Grafana Loki Setup - Local Docker Run
+========================================
+
+OVERVIEW
+--------
+Loki is a log aggregation system by Grafana Labs. In this setup, we run Loki
+locally using Docker and forward container logs to it for monitoring.
+
+----------------------------------------
+STEP 1: Start Loki with Docker
+----------------------------------------
+
+Command used to start Loki:
+
+  docker run -d \
+    --name loki \
+    -p 3100:3100 \
+    grafana/loki:2.9.0 \
+    -config.file=/etc/loki/local-config.yaml
+
+Verify Loki is running:
+
+  docker ps | grep loki
+
+Check Loki is ready (should return "ready"):
+
+  curl http://localhost:3100/ready
+
+----------------------------------------
+STEP 2: Start Promtail (Log Forwarder)
+----------------------------------------
+
+Promtail ships logs from Docker containers to Loki.
+
+  docker run -d \
+    --name promtail \
+    -v /var/log:/var/log \
+    -v /var/lib/docker/containers:/var/lib/docker/containers:ro \
+    -v /etc/promtail:/etc/promtail \
+    grafana/promtail:2.9.0 \
+    -config.file=/etc/promtail/promtail-config.yaml
+
+Sample promtail-config.yaml (save to /etc/promtail/):
+
+  server:
+    http_listen_port: 9080
+
+  positions:
+    filename: /tmp/positions.yaml
+
+  clients:
+    - url: http://loki:3100/loki/api/v1/push
+
+  scrape_configs:
+    - job_name: docker
+      static_configs:
+        - targets:
+            - localhost
+          labels:
+            job: docker-logs
+            __path__: /var/lib/docker/containers/*/*-json.log
+
+----------------------------------------
+STEP 3: View Logs via Loki API
+----------------------------------------
+
+Query all logs from the last hour:
+
+  curl -G -s "http://localhost:3100/loki/api/v1/query_range" \
+    --data-urlencode 'query={job="docker-logs"}' \
+    --data-urlencode 'start='"$(date -d '1 hour ago' +%s%N)" \
+    --data-urlencode 'end='"$(date +%s%N)" \
+    | python3 -m json.tool
+
+----------------------------------------
+STEP 4: (Optional) View Logs in Grafana
+----------------------------------------
+
+Start Grafana:
+
+  docker run -d \
+    --name grafana \
+    -p 3000:3000 \
+    grafana/grafana:latest
+
+Then:
+  1. Open http://localhost:3000 in browser
+  2. Login: admin / admin
+  3. Go to Configuration → Data Sources → Add data source
+  4. Select "Loki"
+  5. Set URL to: http://loki:3100
+  6. Click "Save & Test"
+  7. Go to Explore → select Loki → run query: {job="docker-logs"}
+
+----------------------------------------
+STEP 5: Nomad Log Forwarding to Loki
+----------------------------------------
+
+To forward Nomad task logs to Loki, update promtail config to scrape
+Nomad's alloc directory:
+
+  scrape_configs:
+    - job_name: nomad
+      static_configs:
+        - targets:
+            - localhost
+          labels:
+            job: nomad-logs
+            __path__: /var/lib/nomad/alloc/*/alloc/logs/*.std*
+
+----------------------------------------
+CLEANUP
+----------------------------------------
+
+Stop and remove all containers:
+
+  docker stop loki promtail grafana
+  docker rm loki promtail grafana
+
+========================================
+  End of Loki Setup Notes
+========================================
