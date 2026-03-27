@@ -2,8 +2,8 @@
 
 ![CI Pipeline](https://github.com/YOUR_USERNAME/devops-intern-final/actions/workflows/ci.yml/badge.svg)
 
-**Name:** Your Name Here  
-**Date:** 2025-06-01  
+**Name:** Sumeet Yadav  
+**Date:** 27-03-2026
 **Description:** A complete DevOps pipeline demonstrating Git, Linux scripting, Docker, CI/CD with GitHub Actions, Nomad job deployment, and log monitoring with Grafana Loki.
 
 ---
@@ -242,7 +242,7 @@ You'll see the experiment with logged loss/accuracy metrics per epoch.
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/YOUR_USERNAME/devops-intern-final.git
+git clone https://github.com/Sumeet-Y1/devops-intern-final.git
 cd devops-intern-final
 
 # 2. Run the Python script
