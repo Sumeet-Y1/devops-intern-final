@@ -13,12 +13,13 @@ job "hello-devops" {
       driver = "docker"
 
       config {
-        image = "hello-devops:latest"
+        image = "hashicorp/http-echo:0.2.3"
+        args  = ["-text=Hello, DevOps!"]
       }
 
       resources {
-        cpu    = 100  # MHz
-        memory = 64   # MB
+        cpu    = 100
+        memory = 64
       }
 
       restart {

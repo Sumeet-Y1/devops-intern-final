@@ -1,6 +1,6 @@
 # DevOps Intern Final Assessment
 
-![CI Pipeline](https://github.com/YOUR_USERNAME/devops-intern-final/actions/workflows/ci.yml/badge.svg)
+![CI Pipeline](https://github.com/Sumeet-Y1/devops-intern-final/actions/workflows/ci.yml/badge.svg)
 
 **Name:** Sumeet Yadav  
 **Date:** 27-03-2026
@@ -262,3 +262,20 @@ docker run -d --name loki -p 3100:3100 grafana/loki:2.9.0 -config.file=/etc/loki
 nomad agent -dev &
 nomad job run nomad/hello.nomad
 ```
+
+
+## screenshots
+
+## Progress Screenshots
+
+### Screenshot 1: GitHub Action Success
+![Screenshot 1](screenshots/1.png)
+
+### Screenshot 2: Hello DevOps Output
+![Screenshot 2](screenshots/2.png)
+
+### Screenshot 3: Disk Usage
+![Screenshot 3](screenshots/3.png)
+
+### Screenshot 4: Docker Build and Run
+![Screenshot 4](screenshots/4.png)
